@@ -113,3 +113,60 @@ docker run -d --name loki \
   -config.file=/etc/loki/local-config.yaml
 
 
+
+
+//Configuration file for the otel otel-config.yaml
+--------------------
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+  debug:
+    verbosity: detailed
+  zipkin:
+    endpoint: "http://jaeger-ui:9411/api/v2/spans"
+  otlphttp/logs:
+    endpoint: "http://loki:3100/otlp"
+    tls:
+     insecure: true
+
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [prometheus]
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [debug, zipkin]
+    logs:
+      receivers: [otlp]
+      exporters: [otlphttp/logs]
+
+
+//docker-compose file for spinning the jaeger UI
+---------------------------
+
+version: '3.7'
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686" # the jaeger UI
+      - "4317:4317" # the OpenTelemetry collector grpc
+      - "4318:4318"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+
+
+
