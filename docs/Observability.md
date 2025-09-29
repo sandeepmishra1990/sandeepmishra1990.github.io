@@ -101,8 +101,9 @@ docker run -d --name prometheus \
 ```
 
 
-## tracing -- run jaeger UI
+  ## tracing run jaeger UI
 -------------------------
+
 ```
 docker run -d --name jaeger-ui \
   --network monitoring \
@@ -110,7 +111,6 @@ docker run -d --name jaeger-ui \
   -p 9411:9411 \
   -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
   jaegertracing/all-in-one:latest
-
 ```
 
 
