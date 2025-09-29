@@ -1,0 +1,34 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+  debug:
+    verbosity: detailed
+  zipkin:
+    endpoint: "http://jaeger-ui:9411/api/v2/spans"
+  otlphttp/logs:
+    endpoint: "http://loki:3100/otlp"
+    tls:
+     insecure: true
+
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [prometheus]
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [debug, zipkin]
+    logs:
+      receivers: [otlp]
+      exporters: [otlphttp/logs]
