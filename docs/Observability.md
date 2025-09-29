@@ -293,3 +293,51 @@ tasks.named('test') {
 }
 ```
 
+
+## Spring BEan Required to overwrite the spanExporting behaviour, example to exclude the actuator calls.
+
+```
+    @Bean
+    public SpanExportingPredicate excludeActuatorPredicate() {
+        return span -> {
+            String url = span.getTags().get("http.url");
+            String target = span.getTags().get("http.target");
+            String route = span.getTags().get("http.route");
+            // Drop if any tag matches actuator
+            System.out.println("************"+url);
+            if ((url != null && url.startsWith("/actuator")) ||
+                    (target != null && target.startsWith("/actuator")) ||
+                    (route != null && route.startsWith("/actuator"))) {
+                return false;
+            }
+            return true;
+        };
+    }
+```
+
+## Spring Bean required to enable the AOP for observability
+```
+    @Bean
+    public ObservedAspect observedAspect(ObservationRegistry registry) {
+        return new ObservedAspect(registry);
+    }
+```
+
+## Spring Bean to overwrite the text publsher to write the spans in logs 
+```
+   @Bean
+    public ObservationHandler<?> observationTextPublisher() {
+        return new ObservationTextPublisher(logger::info);
+    }
+```
+## To provide custom name to endpoints 
+
+```
+@Observed(contextualName="DemoService.httptest.call", name="DemoService.httptest.call")
+    @GetMapping("/httptest")
+    public String call()
+    {
+        return service.testhttpservice();
+    }
+```
+
