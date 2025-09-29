@@ -1,1 +1,1 @@
-### Opentelemtry Spring Implementation docs/steps [link](docs/opentelemetryimpl/Observability.md)
+### Opentelemtry Spring Implementation docs/steps [link](opentelemetryimpl/Observability.md)
