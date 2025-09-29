@@ -1,1 +1,1 @@
-### 1. Opentelemtry Spring Implementation -->  [readme] (opentelemetryimpl/Observability.md)
+### 1. Opentelemtry Spring Implementation -->  [readme](opentelemetryimpl/Observability.md)
