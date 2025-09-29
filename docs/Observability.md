@@ -185,3 +185,111 @@ services:
 
 [Architecture Image](docs/otel-arch.png)
 
+
+
+
+
+## Spring Boot Dependencies to enable OpenTelemetry
+---------------------
+
+```
+	### experimental tracing,log exports libs
+	        implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	### implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	        runtimeOnly 'io.micrometer:micrometer-registry-otlp'
+  ### for sending traces to otel collector
+	        implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+
+```
+
+## Application.yaml props
+---------------------
+
+```
+logging.pattern.correlation=[${spring.application.name:},%X{traceId:-},%X{spanId:-}] 
+logging.include-application-name=false
+logging.level.root=DEBUG
+logging.level.com.example.demo=DEBUG
+logging.level.org.springframework.beans.factory=DEBUG
+
+logging.level.io.micrometer.tracing=DEBUG
+logging.level.io.opentelemetry=DEBUG
+
+
+management.security.enabled=false
+management.endpoints.web.exposure.include=metrics,health
+
+management.observations.key-values.env=prod
+management.observations.enable.all=true
+management.observations.http.client.requests.name=demo-client-observation
+management.observations.http.server.requests.name=demo-server-observation
+management.observations.long-task-timer.enabled=false
+
+
+management.tracing.enabled=true
+management.tracing.sampling.probability=1.0
+
+management.otlp.tracing.endpoint=http://localhost:4317
+management.otlp.tracing.transport=GRPC
+
+```
+
+## Build file used for demo
+-----------------
+```
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.4'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo project for Spring Boot'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	//general app libs
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+
+	//operational libs.
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+
+	// experimental tracing,log exports libs
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	//implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	runtimeOnly 'io.micrometer:micrometer-registry-otlp'
+    //for sending traces to otel collector
+	implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+
+
+
+	//test libs
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+
+	//logging libs
+	implementation 'org.slf4j:slf4j-api' // SLF4J API
+	runtimeOnly 'ch.qos.logback:logback-classic' // Logback implementation
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+```
+
