@@ -342,4 +342,4 @@ tasks.named('test') {
 
 Architecture Image
 --------------------------
-[Image](opentelemetryimpl/otel-arch.png)
+[Image](otel-arch.png)
