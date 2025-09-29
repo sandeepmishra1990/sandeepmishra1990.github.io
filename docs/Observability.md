@@ -1,26 +1,31 @@
-documentation: https://opentelemetry.io/docs/collector/installation/
+# documentation: https://opentelemetry.io/docs/collector/installation/
 -------------------------------------------------------------------
 
-//set docker network
+## set docker network
 -----------------------
+```
 docker network create monitoring
-
+```
 
 //this is to run trace generator client
 ----------------------
+```
 export GOBIN=${GOBIN:-$(go env GOPATH)/bin}
+```
 
-//Otel Collector (individual) or below
+## Otel Collector (individual) or below
 ------------------------
+```
 docker pull otel/opentelemetry-collector-contrib:0.132.0
+```
 
-
-//simulate client to generate traces,logs,metrics
+## simulate client to generate traces,logs,metrics
 -------------------------
+```
 go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemetrygen@latest
+```
 
-
-//otel collector run--> collector with and without config
+## otel collector run--> collector with and without config
 --------------------------
 
 //run the collector without config file
@@ -33,11 +38,13 @@ go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemet
 //for example, you can create a config file named otel-collector-config.yaml
 //and run the collector with it using the -c flag
 //docker run -p 4317:4317 -p 4318:4318 -p 55679:55679 \
-#  -v $(pwd)/otel-collector-config.yaml:/otel-collector-config.yaml \
-#  otel/opentelemetry-collector-contrib:0.132.0 \
-#  --config /otel-collector-config.yaml
-//run the collector with default configuration
+//  -v $(pwd)/otel-collector-config.yaml:/otel-collector-config.yaml \
+//  otel/opentelemetry-collector-contrib:0.132.0 \
+//  --config /otel-collector-config.yaml
 
+## run the collector with default configuration
+
+```
 docker run -d --name=otel-collector \
   --network monitoring \
   -p 4317:4317 \
@@ -45,10 +52,11 @@ docker run -d --name=otel-collector \
   -p 55679:55679 \
   otel/opentelemetry-collector-contrib:0.132.0 \
   2>&1 | tee collector-output.txt # Optionally tee output for easier search later
+```
 
-
-//otel collecotr run with config
+## otel collecotr run with config
 -----------------------------
+```
 docker run -d --name=otel-collector \
   --network monitoring \
   -p 4317:4317 \
@@ -60,64 +68,68 @@ docker run -d --name=otel-collector \
   --config /etc/otel/config.yaml \
   2>&1 | tee collector-output.txt
 
+```
 
-
-//For an easier time seeing relevant output you can filter it:
+## For an easier time seeing relevant output you can filter it:
 ------------------------------
+```
 $GOBIN/telemetrygen traces --otlp-insecure \
   --traces 3 2>&1 | grep -E 'start|traces|stop'
 
 //to check collector logs if traces are generated or not
 ---------------------------
 $ grep -E '^Span|(ID|Name|Kind|time|Status \w+)\s+:' ./collector-output.txt
+```
 
-
-//visualization
+## visualization
 -------------------------
 //whilesetting the datasource use url as http://host.docker.internal:9090 not localhost because one container willl call other container inside docker and localhost will not work in that case.
 
+```
 docker run -d --name=grafana  --network monitoring -p 3000:3000 grafana/grafana
+```
 
-
-//setup prometheus execute from Otel-collec-jaeger folder all the commands
+ ## setup prometheus execute from Otel-collec-jaeger folder all the commands
 ----------------------
+```
 docker run -d --name prometheus \
   --network monitoring \
   --name prometheus \
   -p 9090:9090 \
   -v $(pwd)/prometheus:/etc/prometheus \
   prom/prometheus
+```
 
 
-
-  //tracing -- run jaeger UI
+  ## tracing -- run jaeger UI
   -------------------------
-
+```
 docker run -d --name jaeger-ui \
   --network monitoring \
   -p 16686:16686 \
   -p 9411:9411 \
   -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
   jaegertracing/all-in-one:latest
+```
 
 
-
-// logs loki
+## logs loki
 -------------------------
 
-
+```
 docker run -d --name loki \
   --network monitoring \
   -p 3100:3100 \
   grafana/loki:latest \
   -config.file=/etc/loki/local-config.yaml
+```
 
 
 
-
-//Configuration file for the otel otel-config.yaml
+ ## Configuration file for the otel otel-config.yaml
 --------------------
-<code> receivers:
+```
+receivers:
   otlp:
     protocols:
       grpc:
@@ -151,11 +163,12 @@ service:
     logs:
       receivers: [otlp]
       exporters: [otlphttp/logs]
-</code>
 
-//docker-compose file for spinning the jaeger UI
+```
+
+## docker-compose file for spinning the jaeger UI
 ---------------------------
-<code>
+```
 version: '3.7'
 services:
   jaeger:
@@ -167,6 +180,7 @@ services:
     environment:
       - COLLECTOR_OTLP_ENABLED=true
 
-</code>
+```
 
+[Architecture Image](docs/otel-arch.png)
 
