@@ -340,6 +340,6 @@ tasks.named('test') {
 ```
 
 
-Architecture Image
---------------------------
+Architecture Image 
+----------------------------
 [Image](otel-arch.png)
