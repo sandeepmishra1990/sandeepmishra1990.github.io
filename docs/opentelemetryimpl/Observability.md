@@ -183,11 +183,6 @@ services:
 
 ```
 
-[Architecture Image](docs/otel-arch.png)
-
-
-
-
 
 ## Spring Boot Dependencies to enable OpenTelemetry
 ---------------------
@@ -238,7 +233,7 @@ management.otlp.tracing.transport=GRPC
 ```
 
 ## Build file used for demo
------------------
+---------------------------
 ```
 plugins {
 	id 'java'
@@ -344,3 +339,7 @@ tasks.named('test') {
     }
 ```
 
+
+Architecture Image
+--------------------------
+[Image](opentelemetryimpl/otel-arch.png)
