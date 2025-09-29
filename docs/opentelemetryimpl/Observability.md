@@ -193,12 +193,15 @@ services:
 ---------------------
 
 ```
-	### experimental tracing,log exports libs
-	        implementation 'io.micrometer:micrometer-tracing-bridge-otel'
-	### implementation 'io.micrometer:micrometer-tracing-bridge-brave'
-	        runtimeOnly 'io.micrometer:micrometer-registry-otlp'
-  ### for sending traces to otel collector
-	        implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+experimental tracing,log exports libs
+----------------
+implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+runtimeOnly 'io.micrometer:micrometer-registry-otlp'
+
+for sending traces to otel collector
+-----------------
+implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
 
 ```
 
