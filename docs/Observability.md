@@ -117,7 +117,7 @@ docker run -d --name loki \
 
 //Configuration file for the otel otel-config.yaml
 --------------------
-receivers:
+<code> receivers:
   otlp:
     protocols:
       grpc:
@@ -151,11 +151,11 @@ service:
     logs:
       receivers: [otlp]
       exporters: [otlphttp/logs]
-
+</code>
 
 //docker-compose file for spinning the jaeger UI
 ---------------------------
-
+<code>
 version: '3.7'
 services:
   jaeger:
@@ -167,6 +167,6 @@ services:
     environment:
       - COLLECTOR_OTLP_ENABLED=true
 
-
+</code>
 
 
